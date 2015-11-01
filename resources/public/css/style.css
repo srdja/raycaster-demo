@@ -1,0 +1,15 @@
+body {
+    background: black;
+}
+
+#surface {
+    color: white;
+    background: black;
+    padding-left: 0;
+    padding-right: 0;
+    margin-right: auto;
+    margin-left: auto;
+    margin-top: 30px;
+    display: block;
+    position: relative;
+}
