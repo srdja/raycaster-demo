@@ -9,9 +9,4 @@
 
 (defn delta
   [time]
-  (assoc time :delta (- (.now js/Date) (:start time))))
-
-
-(defn start
-  [time]
-  (assoc time :start (:current time)))
+  (- (.now js/Date) (:start time)))
