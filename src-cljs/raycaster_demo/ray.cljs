@@ -25,10 +25,10 @@
          ;; Since a border point can belong to both quadrants
          :x (if (> (nth dir 0) 0)
               (int (nth org 0))
-              (- (int (nth org 0)) 1))
+              (.ceil js/Math (- (nth org 0) 1)))
          :y (if (> (nth dir 1) 0)
               (int (nth org 1))
-              (- (int (nth org 1)) 1))
+              (.ceil js/Math (- (nth org 1) 1)))
          :w 1
          :h 1))
 
