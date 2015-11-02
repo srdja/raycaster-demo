@@ -21,5 +21,10 @@
         isin-a (* -1 sin-a)
         x      (nth v 0)
         y      (nth v 1)]
-    ([(+ (* cos-a x) (* isin-a y))
-      (+ (* sin-a x) (* cos-a  y))])))
+    [(+ (* cos-a x) (* isin-a y))
+     (+ (* sin-a x) (* cos-a  y))]))
+
+
+(defn vector-scale
+  [v s]
+  ())

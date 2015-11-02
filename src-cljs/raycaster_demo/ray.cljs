@@ -82,7 +82,8 @@
   "Casts a ray across the grid and returns the end point"
   [map org dir]
   (loop [p org]
-    (if (map/point-is-solid map (parent-quadrant p dir))
+    (if (or (map/point-is-solid map (parent-quadrant p dir))
+            (and (= (nth dir 0) 0) (= (nth dir 1) 0)))
       p
       (recur
        (next-grid-intersect (sub-quadrant parent-quadrant p dir)
