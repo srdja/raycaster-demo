@@ -25,6 +25,8 @@
      (+ (* sin-a x) (* cos-a  y))]))
 
 
-(defn vector-scale
-  [v s]
-  ())
+(defn point-distance
+  [p1 p2]
+  (let [a (- (nth p1 0) (nth p2 0))
+        b (- (nth p1 1) (nth p2 1))]
+    (.sqrt js/Math (+ (* a a) (* b b)))))
