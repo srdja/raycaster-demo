@@ -59,3 +59,12 @@
   [context viewport eye]
   (do (.save context)
       (.restore context)))
+
+
+(defn fps
+  [context viewport frames]
+  (do (.save context)
+      (aset context "font" "20px Sans")
+      (aset context "fillStyle" "white")
+      (.fillText context (gstr/format "fps: %.2f" frames) 20 35)
+      (.restore context)))
