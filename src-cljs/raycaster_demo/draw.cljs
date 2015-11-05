@@ -39,13 +39,20 @@
         end-x (* width (nth (:end ray) 0))
         end-y (* width (nth (:end ray) 1))]
     (do (.save context)
+        (.translate context 0.5 0.5)
         (.beginPath context)
-        (.moveTo context org-x org-y)
-        (.lineTo context end-x end-y)
         (aset context "lineWidth" 1)
         (aset context "strokeStyle" "white")
+        (.moveTo context org-x org-y)
+        (.lineTo context end-x end-y)
         (.stroke context)
         (.restore context))))
+
+
+(defn rays
+  [context viewport rays]
+    (doseq [r rays]
+      (ray context viewport r)))
 
 
 (defn eye
