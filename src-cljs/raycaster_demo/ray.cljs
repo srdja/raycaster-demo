@@ -1,5 +1,6 @@
 (ns raycaster-demo.ray
-  (:require [raycaster-demo.map :as map]))
+  (:require [raycaster-demo.map :as map]
+            [raycaster-demo.math :as math]))
 
 
 (def quadrant
@@ -91,14 +92,28 @@
 
 
 (defn cast
-  "Returns a ray "
   [map org dir]
   (let [end (end-grid-point map org dir)
-        len (let [a (- (nth end 0) (nth org 0))
-                  b (- (nth end 1) (nth org 1))]
-              (.sqrt js/Math (+ (* a a) (* b b))))]
-  (assoc ray
-         :org org
-         :end end
-         :dir dir
-         :len len)))
+        len (math/point-distance org end)]
+    (assoc ray
+           :org org
+           :end end
+           :dir dir
+           :len len)))
+
+
+(defn radial-cast
+  [map org fw fov n]
+  (let [camera-line (math/vector-translate (math/vector-perpendicular fw) (nth org 0) (nth org 1))
+        camera-step (math/vector-scale camera-line (/ 1 (/ n 2)))
+        angle-step  (/ fov n)
+        angle-init  (* -1 (/ fov 2))
+        dir-init    (math/vector-rotate fw angle-init)]
+    (loop [step 0 rays []]
+      (let [dir (math/vector-rotate dir-init (+ angle-init (* step angle-step)))
+            cam (math/vector-add camera-line
+                                 (math/vector-cross-product camera-step [n n]))
+            ray (cast map cam dir)]
+        (if (= step n)
+          (conj rays ray)
+          (recur (inc step) (conj rays ray)))))))
