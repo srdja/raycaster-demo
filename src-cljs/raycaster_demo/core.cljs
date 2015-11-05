@@ -26,7 +26,7 @@
 
 
 (def eye
-  {:pos [32 32]
+  {:pos [64 64]
    :dir [0 0]
    :fw  [1 0]
    :fov 90
@@ -100,14 +100,16 @@
 
 (def state
   (atom {:timer-start (.now js/Date)
-         :eye eye}))
+         :eye eye
+         :rays []}))
 
 
 (defn draw
   [state]
   (do (.clearRect context 0 0 (:w viewport) (:h viewport))
       (draw/tile-map-2d context viewport map/tile-map)
-      (draw/ray context viewport (ray/cast map/tile-map (eye-to-map-coords (:eye state)) (:fw (:eye state))))
+;;      (draw/ray context viewport (ray/cast map/tile-map (eye-to-map-coords (:eye state)) (:fw (:eye state))))
+      (draw/rays context viewport (:rays state))
       state))
 
 
@@ -117,9 +119,12 @@
               (let [time-now   (.now js/Date)
                     time-delta (- time-now (:timer-start @state))
                     eye        (apply-inputs (:eye @state) @input/keys-down time-delta)
+                    eye-coord  (eye-to-map-coords eye)
+                    rays       (ray/radial-cast map/tile-map eye-coord (:fw eye) (:fov eye) 256)
                     end-state  (assoc @state
                                       :timer-start time-now
-                                      :eye eye)]
+                                      :eye eye
+                                      :rays rays)]
                 (draw end-state)))
       (.requestAnimationFrame js/window update-frame)))
 
