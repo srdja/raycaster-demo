@@ -27,9 +27,9 @@
 
 
 (defn vector-scale
-  [v s]
-  [(* s (nth v 0))
-   (* s (nth v 1))])
+  [v x y]
+  [(* (nth v 0) x)
+   (* (nth v 1) y)])
 
 
 (defn vector-translate
@@ -45,19 +45,9 @@
     (.sqrt (+ (* x x) (* y y)))))
 
 
-(defn vector-perpendicular
-  [v]
-  (vector-rotate v 90))
-
-
 (defn vector-add
   [v1 v2]
   (map + v1 v2))
-
-
-(defn vector-cross-product
-  [v1 v2]
-  (map * v1 v2))
 
 
 (defn point-distance
@@ -65,14 +55,3 @@
   (let [a (- (nth p1 0) (nth p2 0))
         b (- (nth p1 1) (nth p2 1))]
     (.sqrt js/Math (+ (* a a) (* b b)))))
-
-
-(defn eye-to-camera-distance
-  [fov]
-  (if (= fov 180)
-    0
-    (let [rad   (/ (* (/ fov 2) Math/PI) 180)
-          cos   (.cos js/Math rad)
-          sin   (.sin js/Math rad)
-          scale (/ 1 sin)]
-      (* cos scale))))
