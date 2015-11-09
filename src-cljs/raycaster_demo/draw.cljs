@@ -58,6 +58,10 @@
 (defn eye
   [context viewport eye]
   (do (.save context)
+      (.beginPath context)
+      (.rect context (nth (:pos eye) 0) (nth (:pos eye) 1) 1 1)
+      (aset context "fillStyle" "red")
+      (.fill context)
       (.restore context)))
 
 

@@ -112,6 +112,7 @@
 ;;      (draw/ray context viewport (ray/cast map/tile-map (eye-to-map-coords (:eye state)) (:fw (:eye state))))
       (draw/rays context viewport (:rays state))
       (draw/fps context viewport (:fps state))
+      (draw/eye context viewport (:eye state))
       state))
 
 
