@@ -43,9 +43,8 @@
   [org]  ray origin vector
   [dir]  ray direction vector
   "
-  [f org dir]
-  (let [paren (f org dir)
-        org-x (nth org 0)
+  [paren org dir]
+  (let [org-x (nth org 0)
         org-y (nth org 1)
         width (if (< (nth dir 0) 0)                    ;; -x
                  (* -1 (- org-x (:x paren)))
@@ -83,12 +82,12 @@
   "Casts a ray across the grid and returns the end point"
   [map org dir]
   (loop [p org]
-    (if (or (map/point-is-solid map (parent-quadrant p dir))
-            (and (= (nth dir 0) 0) (= (nth dir 1) 0)))
-      p
-      (recur
-       (next-grid-intersect (sub-quadrant parent-quadrant p dir)
-                            dir)))))
+    (let [par (parent-quadrant p dir)]
+      (if (or (map/point-is-solid map par)
+              (and (= (nth dir 0) 0) (= (nth dir 1) 0)))
+        p
+        (recur
+         (next-grid-intersect (sub-quadrant par p dir) dir))))))
 
 
 (defn cast
@@ -104,16 +103,18 @@
 
 (defn radial-cast
   [map org fw fov n]
-  (let [camera-line (math/vector-translate (math/vector-perpendicular fw) (nth org 0) (nth org 1))
-        camera-step (math/vector-scale camera-line (/ 1 (/ n 2)))
+  (let [angle-start (* -1 (/ fov 2))
         angle-step  (/ fov n)
-        angle-init  (* -1 (/ fov 2))
-        dir-init    (math/vector-rotate fw angle-init)]
-    (loop [step 0 rays []]
-      (let [dir (math/vector-rotate dir-init (+ angle-init (* step angle-step)))
-            cam (math/vector-add camera-line
-                                 (math/vector-cross-product camera-step [n n]))
+        cam-length  (.sin js/Math (/ (* (/ fov 2) Math/PI) 180))
+        cam-line    (math/vector-scale (math/vector-rotate fw 90) cam-length cam-length)
+        cam-seg     (/ cam-length (/ n 2))
+        cam-step    (math/vector-scale cam-line cam-seg cam-seg)
+        cam-start   (math/vector-scale cam-line -1 -1)
+        dir-start   (math/vector-rotate fw angle-start)]
+    (loop [step 0 rays [] cam-next cam-start]
+      (let [dir (math/vector-rotate dir-start (* step angle-step))
+            cam (math/vector-add org cam-next)
             ray (cast map cam dir)]
         (if (= step n)
           (conj rays ray)
-          (recur (inc step) (conj rays ray)))))))
+          (recur (inc step) (conj rays ray) (math/vector-add cam-next cam-step)))))))
