@@ -13,8 +13,8 @@
             side  (:side tile-map)
             view  (:w viewport)
             width (/ view side)
-            x     (* width (rem index side))
-            y     (* width (int (/ index side)))]
+            x     (+ (:x viewport) (* width (rem index side)))
+            y     (+ (:y viewport) (* width (int (/ index side))))]
         (do
           (.beginPath context)
           (.rect context x y width width)
@@ -32,12 +32,14 @@
 (defn ray
   [context viewport ray]
   (let [side 32
-        view (:w viewport)
+        view  (:w viewport)
         width (/ view side)
-        org-x (* width (nth (:org ray) 0))
-        org-y (* width (nth (:org ray) 1))
-        end-x (* width (nth (:end ray) 0))
-        end-y (* width (nth (:end ray) 1))]
+        vp-x  (:x viewport)
+        vp-y  (:y viewport)
+        org-x (+ vp-x (* width (nth (:org ray) 0)))
+        org-y (+ vp-y (* width (nth (:org ray) 1)))
+        end-x (+ vp-x (* width (nth (:end ray) 0)))
+        end-y (+ vp-y (* width (nth (:end ray) 1)))]
     (do (.save context)
         (.translate context 0.5 0.5)
         (.beginPath context)
@@ -59,7 +61,9 @@
   [context viewport eye]
   (do (.save context)
       (.beginPath context)
-      (.rect context (nth (:pos eye) 0) (nth (:pos eye) 1) 1 1)
+      (.rect context
+             (+ (:x viewport) (nth (:pos eye) 0))
+             (+ (:y viewport) (nth (:pos eye) 1)) 1 1)
       (aset context "fillStyle" "red")
       (.fill context)
       (.restore context)))
@@ -70,5 +74,7 @@
   (do (.save context)
       (aset context "font" "20px Sans")
       (aset context "fillStyle" "white")
-      (.fillText context (gstr/format "fps: %.2f" frames) 20 35)
+      (.fillText context (gstr/format "fps: %.2f" frames)
+                 (+ (:x viewport) 20)
+                 (+ (:y viewport) 35))
       (.restore context)))

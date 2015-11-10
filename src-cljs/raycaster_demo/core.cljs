@@ -15,8 +15,11 @@
 (def context (.getContext surface "2d"))
 
 ;; Viewport
-(def viewport {:w 512 :h 512}) ;; should be passed to drawing functions
-;; mouse yaw
+(def viewport {:w 512 :h 512})
+
+
+(def d3-viewport {:x 0   :y 0 :w 512 :h 512})
+(def d2-viewport {:x 512 :y 0 :w 512 :h 512})
 
 
 (defn eye-to-map-coords
@@ -107,12 +110,11 @@
 
 (defn draw
   [state]
-  (do (.clearRect context 0 0 (:w viewport) (:h viewport))
-      (draw/tile-map-2d context viewport map/tile-map)
-;;      (draw/ray context viewport (ray/cast map/tile-map (eye-to-map-coords (:eye state)) (:fw (:eye state))))
-      (draw/rays context viewport (:rays state))
-      (draw/fps context viewport (:fps state))
-      (draw/eye context viewport (:eye state))
+  (do (.clearRect context 0 0 1024 (:h viewport))
+      (draw/tile-map-2d context d2-viewport map/tile-map)
+      (draw/rays context d2-viewport (:rays state))
+      (draw/fps context d3-viewport (:fps state))
+      (draw/eye context d2-viewport (:eye state))
       state))
 
 
