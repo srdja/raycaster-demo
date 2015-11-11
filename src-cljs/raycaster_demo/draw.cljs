@@ -1,6 +1,7 @@
 (ns raycaster-demo.draw
   (:require [goog.string.format]
-            [goog.string :as gstr]))
+            [goog.string :as gstr]
+            [raycaster-demo.map :as map]))
 
 
 (defn tile-map-2d
@@ -69,12 +70,59 @@
       (.restore context)))
 
 
-(defn fps
-  [context viewport frames]
+(defn info
+  [context viewport info]
+  (let [fps  (:fps info)
+        rays (:rays info)
+        fov  (:fov info)
+        vp-x (:x viewport)
+        vp-y (:y viewport)]
+    (do (.save context)
+        (aset context "font" "14px Sans")
+        (aset context "fillStyle" "white")
+        (.fillText context (gstr/format "fps: %.2f,  fov: %d°,  rays: %d"
+                                        fps, fov, rays)
+                   (+ vp-x 20)
+                   (+ vp-y 35))
+        (.restore context))))
+
+
+(defn columns
+  [context viewport rays tile-map]
   (do (.save context)
-      (aset context "font" "20px Sans")
-      (aset context "fillStyle" "white")
-      (.fillText context (gstr/format "fps: %.2f" frames)
-                 (+ (:x viewport) 20)
-                 (+ (:y viewport) 35))
+      (let [vp-x    (:x viewport)
+            vp-y    (:y viewport)
+            vp-h    (:h viewport)
+            vp-w    (:w viewport)
+            horizon (/ vp-h 2)
+            n-rays  (count rays)
+            width   (/ vp-w n-rays)]
+        (doseq [ray rays]
+          (let [n     (:seq ray)
+                color (:color ray)
+                h     (+ vp-y (- vp-h (* 16 (:len ray)))) ;; XXX vp-h is in this case the max distance
+                x     (+ vp-x (* n width))
+                y     (/ (- vp-h h) 2)]
+            (do (.beginPath context)
+                (.rect context x y width h)
+                (case color
+                  1 (aset context "fillStyle" "#2D4535")
+                  2 (aset context "fillStyle" "#80FCDE")
+                  3 (aset context "fillStyle" "#E7F4F0")
+                  4 (aset context "fillStyle" "#6DE69B")
+                  5 (aset context "fillStyle" "#73AD82")
+                  (aset context "fillStyle" "black"))
+                (.fill context)))))
       (.restore context)))
+
+
+(defn fill-floor
+  [context viewport]
+  (let [x (:x viewport)
+        y (/ (:h viewport) 2)
+        w (:w viewport)]
+    (do (.save context)
+        (.rect context x y w y)
+        (aset context "fillStyle" "grey")
+        (.fill context)
+        (.restore context))))
