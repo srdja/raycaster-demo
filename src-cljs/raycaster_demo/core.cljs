@@ -14,9 +14,6 @@
 ;; Drawing context
 (def context (.getContext surface "2d"))
 
-;; Viewport
-(def viewport {:w 512 :h 512})
-
 
 (def d3-viewport {:x 0   :y 0 :w 512 :h 512})
 (def d2-viewport {:x 512 :y 0 :w 512 :h 512})
@@ -32,19 +29,19 @@
   {:pos [64 64]
    :dir [0 0]
    :fw  [1 0]
-   :fov 100
+   :fov 10
    :speed 50
    :turn-speed 40}) ;; degrees per second
 
 
 (defn get-direction
-  [keys]
-  (math/vector-normalize
-   (map +
-        (:w keys)
-        (:a keys)
-        (:s keys)
-        (:d keys))))
+  [keys fw]
+  (let [l (if (:a keys) (math/vector-rotate fw -90) [0 0])
+        r (if (:d keys) (math/vector-rotate fw  90) [0 0])
+        f (if (:w keys) fw [0 0])
+        b (if (:s keys) (math/vector-rotate fw 180) [0 0])]
+    (math/vector-normalize
+     (map + l r f b))))
 
 
 (defn get-fov
@@ -75,21 +72,21 @@
   (let [l (:left keys)
         r (:right keys)]
     (cond
-      (and l (not r)) 1
-      (and r (not l)) -1
+      (and l (not r)) -1  ;; canvas y axis is flipped
+      (and r (not l))  1  ;;
       (not (or r l)) 0
       (and r l) 0)))
 
 
 (defn apply-inputs
   [eye keys time]
-  (let [dir (get-direction keys)
-        yaw (get-yaw keys)
+  (let [yaw (get-yaw keys)
         fov (get-fov keys)
         fw  (new-forward-vector (:fw eye)
                                 yaw
                                 (:turn-speed eye)
                                 time)
+        dir (get-direction keys fw)
         pos (new-position (:pos eye)
                           dir
                           (:speed eye)
@@ -110,10 +107,14 @@
 
 (defn draw
   [state]
-  (do (.clearRect context 0 0 1024 (:h viewport))
+  (do (.clearRect context 0 0 1024 512)
       (draw/tile-map-2d context d2-viewport map/tile-map)
       (draw/rays context d2-viewport (:rays state))
-      (draw/fps context d3-viewport (:fps state))
+      (draw/info context d2-viewport {:fps (:fps state)
+                                      :fov (:fov (:eye state))
+                                      :rays 64})
+      (draw/fill-floor context d3-viewport)
+      (draw/columns context d3-viewport (:rays state) map/tile-map)
       (draw/eye context d2-viewport (:eye state))
       state))
 
@@ -125,7 +126,7 @@
                     time-delta (- time-now (:timer-start @state))
                     eye        (apply-inputs (:eye @state) @input/keys-down time-delta)
                     eye-coord  (eye-to-map-coords eye)
-                    rays       (ray/radial-cast map/tile-map eye-coord (:fw eye) (:fov eye) 64)
+                    rays       (ray/radial-cast map/tile-map eye-coord (:fw eye) (:fov eye) 32)
                     fps        (/ 1000 time-delta)
                     end-state  (assoc @state
                                       :timer-start time-now
