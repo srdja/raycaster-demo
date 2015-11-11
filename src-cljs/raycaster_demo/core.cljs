@@ -141,21 +141,4 @@
       (.requestAnimationFrame js/window update-frame)))
 
 
-;(defn update-frame
-;  []
-;  (do (reset! state
-;              (let [time-now   (.now js/Date)
-;                    time-delta (- time-now (:timer-start @state))
-;                    eye        (apply-inputs (:eye @state) @input/keys-down time-delta)
-;                    eye-coord  (eye-to-map-coords eye)
-;                    rays       (ray/radial-cast map/tile-map eye-coord (:fw eye) (:fov eye) 32)
-;                    fps        (/ 1000 time-delta)
-;                    end-state  (assoc @state
-;                                      :timer-start time-now
-;                                      :eye eye
-;                                      :rays rays
-;                                      :fps fps)]
-;                (draw end-state)))
-;      (.requestAnimationFrame js/window update-frame)))
-
 (.requestAnimationFrame js/window update-frame)
