@@ -113,9 +113,9 @@
                   5 (aset context "fillStyle" "#73AD82")
                   (aset context "fillStyle" "black"))
                 (.fill context)
-;;                (aset context "lineWidth" 1)
-;;                (aset context "strokeStyle" "")
-;;                (.stroke context)))))
+                (aset context "lineWidth" 1)
+                (aset context "strokeStyle" "")
+                (.stroke context)
       (.restore context)))))))
 
 
@@ -128,4 +128,19 @@
         (.rect context x y w y)
         (aset context "fillStyle" "grey")
         (.fill context)
+        (.restore context))))
+
+
+(defn frame
+  [context viewport]
+  (let [x (:x viewport)
+        y (:y viewport)
+        w (:w viewport)
+        h (:h viewport)]
+    (do (.save context)
+        (.beginPath context)
+        (.rect context x y w h)
+        (aset context "lineWidth" 1)
+        (aset context "strokeStyle" "white")
+        (.stroke context)
         (.restore context))))

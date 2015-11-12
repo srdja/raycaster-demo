@@ -17,6 +17,7 @@
 
 (def d3-viewport {:x 0.5 :y 0 :w 512 :h 512})
 (def d2-viewport {:x 512 :y 0 :w 512 :h 512})
+(def full-viewport {:x 0 :y 0 :w 1024 :h 512})
 
 
 (defn eye-to-map-coords
@@ -110,12 +111,13 @@
   (do (.clearRect context 0 0 1024 512)
       (draw/tile-map-2d context d2-viewport map/render-map)
       (draw/rays context d2-viewport (:rays state))
-      (draw/info context d2-viewport {:fps (:fps state)
-                                      :fov (:fov (:eye state))
-                                      :rays 64})
       (draw/fill-floor context d3-viewport)
       (draw/columns context d3-viewport (:rays state))
       (draw/eye context d2-viewport (:eye state))
+      (draw/info context d3-viewport {:fps (:fps state)
+                                      :fov (:fov (:eye state))
+                                      :rays 64})
+      (draw/frame context full-viewport)
       state))
 
 
