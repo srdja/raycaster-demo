@@ -14,7 +14,10 @@
   {:org [0 0]
    :end [0 0]
    :dir [0 0]
-   :len 0})
+   :ang 0
+   :len 0
+   :seq 0
+   :color 0})
 
 
 (defn parent-quadrant
@@ -85,36 +88,37 @@
     (let [par (parent-quadrant p dir)]
       (if (or (map/point-is-solid map par)
               (and (= (nth dir 0) 0) (= (nth dir 1) 0)))
-        p
+        [p par]
         (recur
          (next-grid-intersect (sub-quadrant par p dir) dir))))))
 
 
 (defn cast
-  [map org dir]
-  (let [end (end-grid-point map org dir)
+  [map org dir seq ang]
+  (let [ep  (end-grid-point map org dir)
+        end (nth ep 0)
+        par (nth ep 1)
+        clr (map/color-at map (:x par) (:y par))
         len (math/point-distance org end)]
     (assoc ray
            :org org
            :end end
            :dir dir
-           :len len)))
+           :len (* len (.cos js/Math (math/to-radians ang)))
+           :seq seq
+           :ang ang
+           :color clr)))
 
 
-(defn radial-cast
+(defn cast-fan
   [map org fw fov n]
   (let [angle-start (* -1 (/ fov 2))
         angle-step  (/ fov n)
-        cam-length  (.sin js/Math (/ (* (/ fov 2) Math/PI) 180))
-        cam-line    (math/vector-scale (math/vector-rotate fw 90) cam-length cam-length)
-        cam-seg     (/ cam-length (/ n 2))
-        cam-step    (math/vector-scale cam-line cam-seg cam-seg)
-        cam-start   (math/vector-scale cam-line -1 -1)
         dir-start   (math/vector-rotate fw angle-start)]
-    (loop [step 0 rays [] cam-next cam-start]
+    (loop [step 0 rays []]
       (let [dir (math/vector-rotate dir-start (* step angle-step))
-            cam (math/vector-add org cam-next)
-            ray (cast map cam dir)]
+            ang (+ angle-start (* step angle-step))
+            ray (cast map org dir step ang)]
         (if (= step n)
           (conj rays ray)
-          (recur (inc step) (conj rays ray) (math/vector-add cam-next cam-step)))))))
+          (recur (inc step) (conj rays ray)))))))
