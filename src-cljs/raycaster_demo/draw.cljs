@@ -4,6 +4,17 @@
             [raycaster-demo.map :as map]))
 
 
+(defn get-color
+  [id]
+  (case id
+    1 "#3c5068"
+    2 "#ed405c"
+    3 "#6f8cac"
+    4 "#434180"
+    5 "#2a3b4d"
+    "black"))
+
+
 (defn tile-map-2d
   [context viewport tile-map]
   (do
@@ -19,13 +30,7 @@
         (do
           (.beginPath context)
           (.rect context x y width width)
-          (case color
-            1 (aset context "fillStyle" "#2D4535")
-            2 (aset context "fillStyle" "#80FCDE")
-            3 (aset context "fillStyle" "#E7F4F0")
-            4 (aset context "fillStyle" "#6DE69B")
-            5 (aset context "fillStyle" "#73AD82")
-            (aset context "fillStyle" "black"))
+          (aset context "fillStyle" (get-color color))
           (.fill context)))
       (.restore context))))
 
@@ -101,21 +106,28 @@
           (let [n     (:seq ray)
                 color (:color ray)
                 h     (/ vp-h (:len ray))
-                x     (+ vp-x (* n width))
+                x     (.ceil js/Math (+ vp-x (* n width))) ;; ceil to avoid subpixel drawing
                 y     (/ (- vp-h h) 2)]
             (do (.beginPath context)
+                (aset context "fillStyle" (get-color color))
+                ;; fill column
                 (.rect context x y width h)
-                (case color
-                  1 (aset context "fillStyle" "#2D4535")
-                  2 (aset context "fillStyle" "#80FCDE")
-                  3 (aset context "fillStyle" "#E7F4F0")
-                  4 (aset context "fillStyle" "#6DE69B")
-                  5 (aset context "fillStyle" "#73AD82")
-                  (aset context "fillStyle" "black"))
                 (.fill context)
+                (.closePath context)
+                ;; draw upper border
+                (.beginPath context)
                 (aset context "lineWidth" 1)
-                (aset context "strokeStyle" "")
+                (aset context "strokeStyle" "black")
+                (.moveTo context x y)
+                (.lineTo context (+ x width) y)
                 (.stroke context)
+                (.closePath context)
+                ;; draw lower border
+                (.beginPath context)
+                (.moveTo context x (+ y h))
+                (.lineTo context (+ x width) (+ h y))
+                (.stroke context)
+                (.closePath context)
       (.restore context)))))))
 
 
