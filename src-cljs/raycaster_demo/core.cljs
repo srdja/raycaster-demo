@@ -108,13 +108,13 @@
 (defn draw
   [state]
   (do (.clearRect context 0 0 1024 512)
-      (draw/tile-map-2d context d2-viewport map/tile-map)
+      (draw/tile-map-2d context d2-viewport map/render-map)
       (draw/rays context d2-viewport (:rays state))
       (draw/info context d2-viewport {:fps (:fps state)
                                       :fov (:fov (:eye state))
                                       :rays 64})
       (draw/fill-floor context d3-viewport)
-      (draw/columns context d3-viewport (:rays state) map/tile-map)
+      (draw/columns context d3-viewport (:rays state))
       (draw/eye context d2-viewport (:eye state))
       state))
 
@@ -125,7 +125,7 @@
         time-delta (- time-now (:timer-start state))
         eye        (apply-inputs (:eye state) inputs time-delta)
         eye-coord  (eye-to-map-coords eye)
-        rays       (ray/cast-fan map/tile-map eye-coord (:fw eye) (:fov eye) 128)
+        rays       (ray/cast-fan map/collision-map eye-coord (:fw eye) (:fov eye) 128)
         fps        (/ 1000 time-delta)
         end-state  (assoc state
                           :timer-start time-now

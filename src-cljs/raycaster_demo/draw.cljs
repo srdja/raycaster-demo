@@ -88,7 +88,7 @@
 
 
 (defn columns
-  [context viewport rays tile-map]
+  [context viewport rays]
   (do (.save context)
       (let [vp-x    (:x viewport)
             vp-y    (:y viewport)
