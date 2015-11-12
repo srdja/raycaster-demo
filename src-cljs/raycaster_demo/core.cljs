@@ -15,7 +15,7 @@
 (def context (.getContext surface "2d"))
 
 
-(def d3-viewport {:x 0   :y 0 :w 512 :h 512})
+(def d3-viewport {:x 0.5 :y 0 :w 512 :h 512})
 (def d2-viewport {:x 512 :y 0 :w 512 :h 512})
 
 
@@ -29,7 +29,7 @@
   {:pos [64 64]
    :dir [0 0]
    :fw  [1 0]
-   :fov 10
+   :fov 60
    :speed 50
    :turn-speed 40}) ;; degrees per second
 
@@ -125,7 +125,7 @@
         time-delta (- time-now (:timer-start state))
         eye        (apply-inputs (:eye state) inputs time-delta)
         eye-coord  (eye-to-map-coords eye)
-        rays       (ray/radial-cast map/tile-map eye-coord (:fw eye) (:fov eye) 32)
+        rays       (ray/cast-fan map/tile-map eye-coord (:fw eye) (:fov eye) 128)
         fps        (/ 1000 time-delta)
         end-state  (assoc state
                           :timer-start time-now
