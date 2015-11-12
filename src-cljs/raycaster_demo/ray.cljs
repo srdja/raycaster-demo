@@ -14,7 +14,6 @@
   {:org [0 0]
    :end [0 0]
    :dir [0 0]
-   :ang 0
    :len 0
    :seq 0
    :color 0})
@@ -106,7 +105,6 @@
            :dir dir
            :len (* len (.cos js/Math (math/to-radians ang)))
            :seq seq
-           :ang ang
            :color clr)))
 
 
