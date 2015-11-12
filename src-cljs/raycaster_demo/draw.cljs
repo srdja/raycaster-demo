@@ -100,7 +100,7 @@
         (doseq [ray rays]
           (let [n     (:seq ray)
                 color (:color ray)
-                h     (+ vp-y (- vp-h (* 16 (:len ray)))) ;; XXX vp-h is in this case the max distance
+                h     (/ vp-h (:len ray))
                 x     (+ vp-x (* n width))
                 y     (/ (- vp-h h) 2)]
             (do (.beginPath context)
@@ -112,8 +112,11 @@
                   4 (aset context "fillStyle" "#6DE69B")
                   5 (aset context "fillStyle" "#73AD82")
                   (aset context "fillStyle" "black"))
-                (.fill context)))))
-      (.restore context)))
+                (.fill context)
+;;                (aset context "lineWidth" 1)
+;;                (aset context "strokeStyle" "")
+;;                (.stroke context)))))
+      (.restore context)))))))
 
 
 (defn fill-floor
