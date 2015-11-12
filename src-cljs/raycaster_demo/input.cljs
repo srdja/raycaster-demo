@@ -8,6 +8,8 @@
 (def ^:const RIGHT 39)
 (def ^:const I     73)
 (def ^:const O     79)
+(def ^:const K     75)
+(def ^:const L     76)
 
 
 (def keys-down
@@ -17,7 +19,8 @@
          :d false
          :left false
          :right false
-         :fov 60}))
+         :fov 60
+         :rays 128}))
 
 
 (defn fov-inc
@@ -28,6 +31,20 @@
 (defn fov-dec
   [fov-val]
   (dec fov-val))
+
+
+(defn rays-inc
+  [rays]
+  (if (< rays 512)
+    (* rays 2)
+    rays))
+
+
+(defn rays-dec
+  [rays]
+  (if (> rays 16)
+    (/ rays 2)
+    rays))
 
 
 (defn update-key-down
@@ -42,6 +59,8 @@
       RIGHT (reset! keys-down (update-in keys [:right] (fn [] true)))
       I     (reset! keys-down (update-in keys [:fov] fov-inc (:fov keys)))
       O     (reset! keys-down (update-in keys [:fov] fov-dec (:fov keys)))
+      K     (reset! keys-down (update-in keys [:rays] rays-inc (:rays keys)))
+      L     (reset! keys-down (update-in keys [:rays] rays-dec (:rays keys)))
       event)))
 
 

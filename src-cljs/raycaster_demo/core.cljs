@@ -31,6 +31,7 @@
    :dir [0 0]
    :fw  [1 0]
    :fov 60
+   :rays 128
    :speed 50
    :turn-speed 40}) ;; degrees per second
 
@@ -48,6 +49,11 @@
 (defn get-fov
   [keys]
   (:fov keys))
+
+
+(defn get-rays
+  [keys]
+  (:rays keys))
 
 
 (defn new-forward-vector
@@ -83,6 +89,7 @@
   [eye keys time]
   (let [yaw (get-yaw keys)
         fov (get-fov keys)
+        ray (get-rays keys)
         fw  (new-forward-vector (:fw eye)
                                 yaw
                                 (:turn-speed eye)
@@ -96,6 +103,7 @@
            :pos pos
            :dir dir
            :fw fw
+           :rays ray
            :fov fov)))
 
 
@@ -116,7 +124,7 @@
       (draw/eye context d2-viewport (:eye state))
       (draw/info context d3-viewport {:fps (:fps state)
                                       :fov (:fov (:eye state))
-                                      :rays 64})
+                                      :rays (:rays (:eye state))})
       (draw/frame context full-viewport)
       state))
 
@@ -127,7 +135,7 @@
         time-delta (- time-now (:timer-start state))
         eye        (apply-inputs (:eye state) inputs time-delta)
         eye-coord  (eye-to-map-coords eye)
-        rays       (ray/cast-fan map/collision-map eye-coord (:fw eye) (:fov eye) 128)
+        rays       (ray/cast-fan map/collision-map eye-coord (:fw eye) (:fov eye) (:rays eye))
         fps        (/ 1000 time-delta)
         end-state  (assoc state
                           :timer-start time-now
