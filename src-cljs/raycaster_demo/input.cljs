@@ -17,7 +17,7 @@
          :d false
          :left false
          :right false
-         :fov 10}))
+         :fov 60}))
 
 
 (defn fov-inc
