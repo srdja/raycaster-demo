@@ -1,6 +1,11 @@
 (ns raycaster-demo.math)
 
 
+(defn to-radians
+  [angle]
+  (/ (* angle Math/PI) 180))
+
+
 (defn vector-normalize
   [v]
   (let [x (nth v 0)
@@ -16,7 +21,7 @@
 (defn vector-rotate
   "[v] normalized vector to be rotated by angle [a]"
   [v a]
-  (let [rad    (/ (* a Math/PI) 180)
+  (let [rad    (to-radians a)
         cos-a  (.cos js/Math rad)
         sin-a  (.sin js/Math rad)
         isin-a (* -1 sin-a)
