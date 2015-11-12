@@ -8,8 +8,14 @@
   </head>
 
   <body>
-    <canvas id="surface" height="512" width="512"></canvas>
-
+    <div>
+      <canvas id="surface" height="512" width="1024"></canvas>
+      <p id="help">
+        Movement: [W, A, S, D] + left and right arrows for turning<br>
+        Field of View: +fov = I, -fov = O <br>
+        Ray count: +rays = K, -rays = L <br>
+      </p>
+    </div>
     <script src="js/goog/base.js"></script>
     <script src="js/cljs.js"></script>
     <script type="text/javascript">goog.require("raycaster_demo.core");</script>
