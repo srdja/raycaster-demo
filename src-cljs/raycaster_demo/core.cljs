@@ -10,8 +10,6 @@
 
 
 (def surface (.getElementById js/document "surface"))
-
-;; Drawing context
 (def context (.getContext surface "2d"))
 
 
@@ -21,9 +19,12 @@
 
 
 (defn eye-to-map-coords
-  [eye]
-  [(/ (nth (:pos eye) 0) 16)
-   (/ (nth (:pos eye) 1) 16)])
+  [eye viewport]
+  (let [p-x (nth (:pos eye) 0)
+        p-y (nth (:pos eye) 1)
+        x (/ p-x 16)
+        y (/ p-y 16)]
+    [x y]))
 
 
 (def eye
@@ -114,7 +115,7 @@
          :fps 0}))
 
 
-(defn draw
+(defn draw-frame
   [state]
   (do (.clearRect context 0 0 1024 512)
       (draw/tile-map-2d context d2-viewport map/render-map)
@@ -134,7 +135,7 @@
   (let [time-now   (.now js/Date)
         time-delta (- time-now (:timer-start state))
         eye        (apply-inputs (:eye state) inputs time-delta)
-        eye-coord  (eye-to-map-coords eye)
+        eye-coord  (eye-to-map-coords eye d3-viewport)
         rays       (ray/cast-fan map/collision-map eye-coord (:fw eye) (:fov eye) (:rays eye))
         fps        (/ 1000 time-delta)
         end-state  (assoc state
@@ -142,7 +143,7 @@
                           :eye eye
                           :rays rays
                           :fps fps)]
-    (draw end-state)))
+    (draw-frame end-state)))
 
 
 (defn update-frame
