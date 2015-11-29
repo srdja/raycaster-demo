@@ -1,7 +1,7 @@
 #### Raycasting renderer written in Clojure
 
 
-Try the live demo at [raycaster-demo](http://srdja.me/raycaster-demo)
+Try the live demo at [raycaster-demo](http://blog.srdja.me/raycaster-demo)
 
 
 #### Running the project
