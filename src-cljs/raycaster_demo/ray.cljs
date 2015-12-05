@@ -16,7 +16,7 @@
    :dir [0 0]
    :len 0
    :seq 0
-   :color 0})
+   :tile-id 0})
 
 
 (defn parent-quadrant
@@ -56,17 +56,17 @@
         w (:w quad)
         h (:h quad)
         d (.sqrt js/Math (+ (* w w) (* h h)))
-        angle-a (.abs js/Math (.asin js/Math (/ h d)))
-        angle-b (.abs js/Math (.asin js/Math y))]
+        diagonal-angle (.abs js/Math (.asin js/Math (/ h d)))
+        ray-angle      (.abs js/Math (.asin js/Math y))]
     (let [scale (cond
-                  (and (<= angle-b angle-a) (not= x 0)) (/ w x)
-                  (and (>  angle-b angle-a) (not= y 0)) (/ h y)
+                  (and (<= ray-angle diagonal-angle) (not= x 0)) (/ w x)
+                  (and (>  ray-angle diagonal-angle) (not= y 0)) (/ h y)
                   :else 1)]
       [(+ (:x quad) (* x scale))
        (+ (:y quad) (* y scale))])))
 
 
-(defn end-grid-point
+(defn grid-end-point
   [map org dir]
   (loop [p org]
     (let [par (parent-quadrant p dir)]
@@ -79,10 +79,10 @@
 
 (defn cast
   [map org dir seq ang]
-  (let [ep  (end-grid-point map org dir)
+  (let [ep  (grid-end-point map org dir)
         end (nth ep 0)
         par (nth ep 1)
-        clr (map/color-at map (:x par) (:y par))
+        id  (map/tile-id-at map (:x par) (:y par))
         len (math/point-distance org end)]
     (assoc ray
            :org org
@@ -90,7 +90,7 @@
            :dir dir
            :len (* len (.cos js/Math (math/to-radians ang)))
            :seq seq
-           :color clr)))
+           :tile-id id)))
 
 
 (defn cast-fan
