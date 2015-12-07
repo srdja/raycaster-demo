@@ -5,7 +5,6 @@
             [raycaster-demo.map :as map]
             [raycaster-demo.math :as math]
             [raycaster-demo.draw :as draw]
-            [raycaster-demo.time :as time]
             [raycaster-demo.input :as input]))
 
 
