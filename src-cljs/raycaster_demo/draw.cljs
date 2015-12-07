@@ -104,7 +104,7 @@
             width   (/ vp-w n-rays)]
         (doseq [ray rays]
           (let [n     (:seq ray)
-                color (:color ray)
+                color (:tile-id ray)
                 h     (/ vp-h (:len ray))
                 x     (.ceil js/Math (+ vp-x (* n width))) ;; ceil to avoid subpixel drawing
                 y     (/ (- vp-h h) 2)]
