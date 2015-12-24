@@ -3,7 +3,7 @@
             [raycaster-demo.math :as math]))
 
 
-(def quadrant
+(def cell
   {:x 0
    :y 0
    :w 0
@@ -19,9 +19,9 @@
    :tile-id 0})
 
 
-(defn parent-quadrant
+(defn parent-cell
   [org dir]
-  (assoc quadrant
+  (assoc cell
          :x (if (> (nth dir 0) 0)
               (int (nth org 0))
               (.ceil js/Math (- (nth org 0) 1)))
@@ -32,7 +32,7 @@
          :h 1))
 
 
-(defn sub-quadrant
+(defn sub-cell
   [paren org dir]
   (let [org-x  (nth org 0)
         org-y  (nth org 1)
@@ -42,14 +42,14 @@
         height (if (< (nth dir 1) 0)
                  (- (:y paren) org-y)
                  (- (+ (:y paren) (:h paren)) org-y))]
-    (assoc quadrant
+    (assoc cell
            :x org-x
            :y org-y
            :w width
            :h height)))
 
 
-(defn next-grid-intersect
+(defn traverse-cell
   [quad ray-dir]
   (let [x (nth ray-dir 0)
         y (nth ray-dir 1)
@@ -66,22 +66,22 @@
        (+ (:y quad) (* y scale))])))
 
 
-(defn grid-end-point
+(defn final-point
   [map org dir]
   (loop [p org]
-    (let [par (parent-quadrant p dir)]
+    (let [par (parent-cell p dir)]
       (if (or (map/point-is-solid map par)
               (and (= (nth dir 0) 0) (= (nth dir 1) 0)))
         [p par]
         (recur
-         (next-grid-intersect (sub-quadrant par p dir) dir))))))
+         (traverse-cell (sub-cell par p dir) dir))))))
 
 
 (defn cast
   [map org dir seq ang]
-  (let [ep  (grid-end-point map org dir)
-        end (nth ep 0)
-        par (nth ep 1)
+  (let [fp  (final-point map org dir)
+        end (nth fp 0)
+        par (nth fp 1)
         id  (map/tile-id-at map (:x par) (:y par))
         len (math/point-distance org end)]
     (assoc ray
