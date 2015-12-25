@@ -56,12 +56,17 @@
         w (:w quad)
         h (:h quad)
         d (.sqrt js/Math (+ (* w w) (* h h)))
-        diagonal-angle (.abs js/Math (.asin js/Math (/ h d)))
-        ray-angle      (.abs js/Math (.asin js/Math y))]
-    (let [scale (cond
-                  (and (<= ray-angle diagonal-angle) (not= x 0)) (/ w x)
-                  (and (>  ray-angle diagonal-angle) (not= y 0)) (/ h y)
-                  :else 1)]
+        diagonal-angle (.asin js/Math (/ h d))
+        ray-angle      (.asin js/Math y)]
+    (let [scale (if (and (>= ray-angle 0) (>= diagonal-angle 0))
+                  (cond
+                    (and (<= ray-angle diagonal-angle) (not= x 0)) (/ w x)
+                    (and (>  ray-angle diagonal-angle) (not= y 0)) (/ h y)
+                    :else 1)
+                  (cond
+                    (and (>= ray-angle diagonal-angle) (not= x 0)) (/ w x)
+                    (and (<  ray-angle diagonal-angle) (not= y 0)) (/ h y)
+                    :else 1))]
       [(+ (:x quad) (* x scale))
        (+ (:y quad) (* y scale))])))
 
