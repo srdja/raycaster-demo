@@ -135,7 +135,7 @@
         time-delta (- time-now (:timer-start state))
         eye        (apply-inputs (:eye state) inputs time-delta)
         eye-coord  (eye-to-map-coords eye d3-viewport)
-        rays       (ray/cast-fan map/collision-map eye-coord (:fw eye) (:fov eye) (:rays eye))
+        rays       (ray/cast-fan map/tile-map eye-coord (:fw eye) (:fov eye) (:rays eye))
         fps        (/ 1000 time-delta)
         end-state  (assoc state
                           :timer-start time-now

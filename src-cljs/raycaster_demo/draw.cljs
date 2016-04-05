@@ -99,7 +99,6 @@
             vp-y    (:y viewport)
             vp-h    (:h viewport)
             vp-w    (:w viewport)
-            horizon (/ vp-h 2)
             n-rays  (count rays)
             width   (/ vp-w n-rays)]
         (doseq [ray rays]
