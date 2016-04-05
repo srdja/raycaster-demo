@@ -56,6 +56,6 @@
       false)))
 
 
-(defn color-at
+(defn tile-id-at
   [map x y]
   (nth (nth map y) x))

@@ -82,15 +82,15 @@
   (let [ep  (grid-end-point map org dir)
         end (nth ep 0)
         par (nth ep 1)
-        id  (map/tile-id-at map (:x par) (:y par))
+        rid (map/tile-id-at map (:x par) (:y par))
         len (math/point-distance org end)]
     (assoc ray
+           :dir dir
            :org org
            :end end
-           :dir dir
            :len (* len (.cos js/Math (math/to-radians ang)))
            :seq seq
-           :tile-id id)))
+           :tile-id rid)))
 
 
 (defn cast-fan
